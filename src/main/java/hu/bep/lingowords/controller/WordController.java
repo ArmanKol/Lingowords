@@ -1,8 +1,11 @@
 package hu.bep.lingowords.controller;
 
 import hu.bep.lingowords.Reader;
+import hu.bep.lingowords.logic.RandomWordGenerator;
 import hu.bep.lingowords.model.Word;
 import hu.bep.lingowords.repository.WordRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +14,7 @@ import java.util.List;
 
 @RestController
 public class WordController {
-    //private static Logger logger = LogManager.getLogger(WordController.class);
+    private static Logger logger = LogManager.getLogger(WordController.class);
     private Reader reader = new Reader();
 
     @Autowired
@@ -50,4 +53,15 @@ public class WordController {
             return new Word(-1,"Word is not in database");
         }
     }
+
+    @GetMapping("/words/randomword")
+    public String getRandom(){
+        RandomWordGenerator randomGenerator = new RandomWordGenerator(wordRepository.getMinID(), wordRepository.getMaxID());
+        int wordID = randomGenerator.getRandomNumber();
+
+        String word = wordRepository.findByID(wordID).getWord();
+
+        return word;
+    }
+
 }
