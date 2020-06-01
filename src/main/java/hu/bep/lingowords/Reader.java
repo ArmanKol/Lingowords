@@ -1,5 +1,6 @@
 package hu.bep.lingowords;
 
+import com.google.common.io.Files;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,29 +9,52 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Reader {
     private static Logger logger = LogManager.getLogger(Reader.class);
     private List<String> wordsList = new ArrayList<>();
 
-    public String[] getListOfFiles(){
+    public Set<String> getListOfFiles(){
         try{
+            Set<String> returnfiles = new HashSet<String>();
             URL path = this.getClass().getClassLoader().getResource("lingowords");
+            String[] files = new File(path.toURI()).list();
 
-            return new File(path.toURI()).list();
+            for(String file : files){
+                String extension = Files.getFileExtension(file);
+                if(extension.equals("txt") || extension.equals("csv")){
+                    returnfiles.add(file);
+                }
+            }
+
+            return returnfiles;
         }catch(URISyntaxException us){
             logger.info(us.getInput()+" could not be parsed");
-            return new String[]{};
+            return new HashSet<String>();
         }
     }
 
-    public URL getWordsFile(){
-        URL url = this.getClass().getClassLoader().getResource("lingowords/basiswoorden-gekeurd.txt");
+    public URL getWordsFile(String file){
+        URL url = this.getClass().getClassLoader().getResource("lingowords/"+file);
+
+        if(url == null){
+            throw new NullPointerException("Het opgegeven bestand bestaat niet.");
+        }
 
         return url;
+    }
+
+    public boolean readAllWordsFiles(){
+        Set<String> listOfFiles = getListOfFiles();
+        boolean returnValue = false;
+
+        for(String file: listOfFiles){
+            URL url = this.getClass().getClassLoader().getResource("lingowords/"+file);
+            returnValue = readWordsFile(url);
+        }
+
+        return returnValue;
     }
 
     //TODO: Regex verbeteren
@@ -46,7 +70,7 @@ public class Reader {
                     if(word.matches("([\\w]+['.-][\\w]+)|('\\w[A-Z-a-z]+)|(\\w[0-9]\\w[a-z])|(\\w+[éëäáíïúüöó]\\w+)")){
                         continue;
                     }
-                    if(word.matches("(\\w[a-z]\\w+)")){
+                    if(word.matches("(\\b[a-z]\\w+)")){
                         wordsList.add(word);
                     }
                 }
@@ -56,11 +80,14 @@ public class Reader {
 
             done = true;
         }catch(IOException ioe){
-            logger.error("Not able to open/read file");
+            logger.error("Problemen bij het openen/lezen van de file");
+            done = false;
+        }catch(NullPointerException npe){
+            logger.error("URL is niet geldig");
             done = false;
         }
 
-        clearList(done);
+        //clearList(done);
         return done;
     }
 

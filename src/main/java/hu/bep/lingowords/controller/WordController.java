@@ -1,12 +1,14 @@
 package hu.bep.lingowords.controller;
 
 import hu.bep.lingowords.Reader;
-import hu.bep.lingowords.logic.RandomWordGenerator;
+import hu.bep.lingowords.logic.RandomIntGenerator;
 import hu.bep.lingowords.model.Word;
 import hu.bep.lingowords.repository.WordRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URL;
@@ -22,7 +24,7 @@ public class WordController {
 
     @GetMapping("/saveAll")
     public void saveAllWords(){
-        URL url = reader.getWordsFile();
+        URL url = reader.getWordsFile("basiswoorden-gekeurd.txt");
         reader.readWordsFile(url);
 
         for(String word : reader.getWordsList()){
@@ -37,9 +39,25 @@ public class WordController {
         return wordRepository.findAll();
     }
 
-    @PostMapping(path = "/add/{w}", produces = "application/json")
-    public void addWord(@RequestBody Word word){
-        wordRepository.save(word);
+    @PostMapping("/add/{w}")
+    public ResponseEntity<String> addWord(@PathVariable String word){
+        if(search(word).getId() == -1){
+            wordRepository.save(new Word(word));
+
+            return new ResponseEntity<>("Word has been saved", HttpStatus.ACCEPTED);
+        }
+
+        return new ResponseEntity<>("Word already exists in database", HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/delete/{w}")
+    public ResponseEntity<String> deleteWord(@PathVariable String word){
+        if(search(word).getId() == -1){
+            return new ResponseEntity<>("Word doesn't exist", HttpStatus.BAD_REQUEST);
+        }else{
+            wordRepository.delete(new Word(word));
+            return new ResponseEntity<>("Word has been deleted", HttpStatus.ACCEPTED);
+        }
     }
 
     @GetMapping("/words/{w}")
@@ -56,7 +74,7 @@ public class WordController {
 
     @GetMapping("/words/randomword")
     public String getRandom(){
-        RandomWordGenerator randomGenerator = new RandomWordGenerator(wordRepository.getMinID(), wordRepository.getMaxID());
+        RandomIntGenerator randomGenerator = new RandomIntGenerator(wordRepository.getMinID(), wordRepository.getMaxID());
         int wordID = randomGenerator.getRandomNumber();
 
         String word = wordRepository.findByID(wordID).getWord();

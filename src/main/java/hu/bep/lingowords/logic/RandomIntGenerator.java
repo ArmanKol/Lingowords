@@ -1,12 +1,16 @@
 package hu.bep.lingowords.logic;
 
+import java.util.InputMismatchException;
 import java.util.Random;
 
-public class RandomWordGenerator {
+public class RandomIntGenerator {
 
     private int min, max;
 
-    public RandomWordGenerator(int min, int max){
+    public RandomIntGenerator(int min, int max){
+        if(min > max){
+            throw new InputMismatchException("Min cannot be greater than max");
+        }
         this.min = min;
         this.max = max;
     }
@@ -23,6 +27,14 @@ public class RandomWordGenerator {
         }
 
         return randomInt;
+    }
+
+    public int getMin(){
+        return min;
+    }
+
+    public int getMax(){
+        return max;
     }
 
 }
