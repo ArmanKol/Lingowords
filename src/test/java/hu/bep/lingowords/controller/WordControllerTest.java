@@ -22,13 +22,14 @@ public class WordControllerTest {
     @Test
     @DisplayName("Niet bestaand woord in database return -1")
     void searchForNotExistingWord(){
-        controller.search("papa");
+        Word woord = controller.search("niet bestaand woord");
+        long idWoord = woord.getId();
 
-        assertTrue(controller.search("niet bestaande woord").getId() == -1);
+        assertTrue(idWoord == -1);
     }
 
     @Test
-    @DisplayName("Bestaand woord in de database returned id != -1")
+    @DisplayName("Bestaand woord in de database returned geen woord met id -1")
     void searchForExistingWord(){
         String existingWord = controller.getRandom();
 
@@ -36,11 +37,11 @@ public class WordControllerTest {
     }
 
     @Test
-    @DisplayName("Kan niet bestaand woord opslaan in de database")
+    @DisplayName("Een bestaand woord kan niet weer opgeslagen worden in de database en returned CONFLICT")
     void cantAddWordThatAlreadyExist(){
         String existingWord = controller.getRandom();
 
-        assertEquals(HttpStatus.BAD_REQUEST, controller.addWord(existingWord).getStatusCode());
+        assertEquals(HttpStatus.CONFLICT, controller.addWord(existingWord).getStatusCode());
     }
 
     @Test
@@ -48,7 +49,18 @@ public class WordControllerTest {
     void deleteWordThatNotExists(){
         Word newWord = new Word("ploft");
 
-        assertEquals(HttpStatus.BAD_REQUEST, controller.deleteWord(newWord.getWord()).getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, controller.deleteWord(newWord.getWord()).getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Delete woord dat bestaat returned OK")
+    void deleteWordThatExists(){
+        String randomWord = controller.getRandom();
+        System.out.println(randomWord);
+        HttpStatus status = controller.deleteWord(randomWord).getStatusCode();
+
+        assertTrue(status.equals(HttpStatus.OK));
+        controller.addWord(randomWord);
     }
 
 }

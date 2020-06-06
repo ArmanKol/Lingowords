@@ -1,6 +1,6 @@
 package hu.bep.lingowords.controller;
 
-import hu.bep.lingowords.Reader;
+import hu.bep.lingowords.logic.Reader;
 import hu.bep.lingowords.logic.RandomIntGenerator;
 import hu.bep.lingowords.model.Word;
 import hu.bep.lingowords.repository.WordRepository;
@@ -23,7 +23,7 @@ public class WordController {
     private WordRepository wordRepository;
 
     @GetMapping("/saveAll")
-    public void saveAllWords(){
+    public ResponseEntity<String> saveAllWords(){
         URL url = reader.getWordsFile("basiswoorden-gekeurd.txt");
         reader.readWordsFile(url);
 
@@ -32,6 +32,8 @@ public class WordController {
                 wordRepository.save(new Word(word));
             }
         }
+
+        return new ResponseEntity("Saved", HttpStatus.OK);
     }
 
     @GetMapping("/words")
@@ -44,19 +46,19 @@ public class WordController {
         if(search(word).getId() == -1){
             wordRepository.save(new Word(word));
 
-            return new ResponseEntity<>("Word has been saved", HttpStatus.ACCEPTED);
+            return new ResponseEntity<>("Word has been saved", HttpStatus.OK);
         }
 
-        return new ResponseEntity<>("Word already exists in database", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("Word already exists in database", HttpStatus.CONFLICT);
     }
 
     @PostMapping("/delete/{w}")
     public ResponseEntity<String> deleteWord(@PathVariable String word){
         if(search(word).getId() == -1){
-            return new ResponseEntity<>("Word doesn't exist", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Word doesn't exist", HttpStatus.NOT_FOUND);
         }else{
             wordRepository.delete(new Word(word));
-            return new ResponseEntity<>("Word has been deleted", HttpStatus.ACCEPTED);
+            return new ResponseEntity<>("Word has been deleted", HttpStatus.OK);
         }
     }
 

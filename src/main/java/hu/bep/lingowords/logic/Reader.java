@@ -1,4 +1,4 @@
-package hu.bep.lingowords;
+package hu.bep.lingowords.logic;
 
 import com.google.common.io.Files;
 import org.apache.logging.log4j.LogManager;

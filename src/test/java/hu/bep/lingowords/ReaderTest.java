@@ -2,6 +2,7 @@ package hu.bep.lingowords;
 
 
 import com.google.common.io.Files;
+import hu.bep.lingowords.logic.Reader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
