@@ -1,18 +1,24 @@
-package hu.bep.lingowords;
+package hu.bep.lingowords.logic;
 
 
 import com.google.common.io.Files;
-import hu.bep.lingowords.logic.Reader;
+import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.*;
 
+import static org.mockito.Mockito.*;
+
+import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Reader")
 public class ReaderTest {
+
     Reader reader = new Reader();
 
     @Test
@@ -38,7 +44,7 @@ public class ReaderTest {
         URL invalidURL = this.getClass().getClassLoader().getResource("lingowords/"+fileName);
 
 
-        assertFalse(reader.readWordsFile(invalidURL));
+        assertFalse(reader.readWordsFileTxt(invalidURL));
     }
 
     @Test
@@ -47,7 +53,7 @@ public class ReaderTest {
         String fileName = "test.txt";
         URL validURL = reader.getWordsFile(fileName);
 
-        assertTrue(reader.readWordsFile(validURL));
+        assertTrue(reader.readWordsFileTxt(validURL));
     }
 
     @Test
@@ -55,7 +61,7 @@ public class ReaderTest {
     void checkWoorden(){
         String fileName = "test.txt";
         URL url = reader.getWordsFile(fileName);
-        reader.readWordsFile(url);
+        reader.readWordsFileTxt(url);
 
         assertTrue(reader.getWordsList().size() == 2);
     }
@@ -73,5 +79,22 @@ public class ReaderTest {
 
     }
 
+//    @Test
+//    @DisplayName("Het niet kunnen openen van een URL geeft done = false terug")
+//    void returnFalseWhenCantRead() throws IOException {
+//        Reader readermock = mock(Reader.class);
+//        URLConnection url = mock(URLConnection.class);
+//
+//        URL file = reader.getWordsFile("basiswoorden-gekeurd.txt");
+//
+//        Mockito.when(url.getURL()).thenReturn(file);
+//        Mockito.when(url.getInputStream()).thenThrow(new IOException());
+//        Mockito.when(readermock.readWordsFile(url.getURL())).thenCallRealMethod();
+//        URL newFile = url.getURL();
+//
+//        readermock.readWordsFile(newFile);
+//
+//        System.out.println(verify(readermock).readWordsFile(newFile));
+//    }
 
 }

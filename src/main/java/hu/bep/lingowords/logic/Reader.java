@@ -4,6 +4,7 @@ import com.google.common.io.Files;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.print.DocFlavor;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -51,14 +52,22 @@ public class Reader {
 
         for(String file: listOfFiles){
             URL url = this.getClass().getClassLoader().getResource("lingowords/"+file);
-            returnValue = readWordsFile(url);
+            String extension = Files.getFileExtension(file);
+
+            if(extension.equals("csv")){
+                readWordsFileCsv(url, ",");
+            }else if(extension.equals("txt")){
+                readWordsFileTxt(url);
+            }
+
+            returnValue = readWordsFileTxt(url);
         }
 
         return returnValue;
     }
 
     //TODO: Regex verbeteren
-    public boolean readWordsFile(URL input){
+    public boolean readWordsFileTxt(URL input){
         boolean done;
 
         try{
@@ -88,6 +97,41 @@ public class Reader {
         }
 
         //clearList(done);
+        return done;
+    }
+
+    public boolean readWordsFileCsv(URL input, String delimiter){
+        boolean done;
+
+        try{
+            Scanner scanFile = new Scanner(input.openStream());
+            while(scanFile.hasNext()){
+                String wordLine = scanFile.nextLine();
+                String[] wordArray = wordLine.split(delimiter);
+
+                for(String word : wordArray){
+                    if(word.length() == 5 || word.length() == 6 || word.length() == 7){
+                        if(word.matches("([\\w]+['.-][\\w]+)|('\\w[A-Z-a-z]+)|(\\w[0-9]\\w[a-z])|(\\w+[éëäáíïúüöó]\\w+)")){
+                            continue;
+                        }
+                        if(word.matches("(\\b[a-z]\\w+)")){
+                            wordsList.add(word);
+                        }
+                    }
+                }
+            }
+
+            scanFile.close();
+
+            done = true;
+        }catch(IOException ioe){
+            logger.error("Problemen bij het openen/lezen van de file");
+            done = false;
+        }catch(NullPointerException npe){
+            logger.error("URL is niet geldig");
+            done = false;
+        }
+
         return done;
     }
 

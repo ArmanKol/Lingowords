@@ -12,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 public class WordController {
@@ -22,18 +24,44 @@ public class WordController {
     @Autowired
     private WordRepository wordRepository;
 
-    @GetMapping("/saveAll")
+    @GetMapping("/save/all")
     public ResponseEntity<String> saveAllWords(){
-        URL url = reader.getWordsFile("basiswoorden-gekeurd.txt");
-        reader.readWordsFile(url);
+        reader.readAllWordsFiles();
+        Set<String> wordsNotSaved = new HashSet<>();
 
         for(String word : reader.getWordsList()){
             if(search(word).getId() == -1){
                 wordRepository.save(new Word(word));
+            }else{
+                wordsNotSaved.add(word);
             }
         }
 
-        return new ResponseEntity("Saved", HttpStatus.OK);
+        if(wordsNotSaved.size() > 0){
+            return new ResponseEntity(wordsNotSaved, HttpStatus.CONFLICT);
+        }
+
+        return new ResponseEntity("All words saved", HttpStatus.OK);
+    }
+
+    @GetMapping("/save/{fileName}")
+    public ResponseEntity<Set<String>> saveWordsFromFile(@PathVariable String fileName){
+        URL url = reader.getWordsFile(fileName);
+        Set<String> wordsNotSaved = new HashSet<>();
+
+        for(String word : reader.getWordsList()){
+            if(search(word).getId() == -1){
+                wordRepository.save(new Word(word));
+            }else{
+                wordsNotSaved.add(word);
+            }
+        }
+
+        if(wordsNotSaved.size() > 0){
+            return new ResponseEntity(wordsNotSaved, HttpStatus.CONFLICT);
+        }
+
+        return new ResponseEntity("All words saved", HttpStatus.OK);
     }
 
     @GetMapping("/words")
@@ -41,7 +69,7 @@ public class WordController {
         return wordRepository.findAll();
     }
 
-    @PostMapping("/add/{w}")
+    @PostMapping("/words/add/{w}")
     public ResponseEntity<String> addWord(@PathVariable String word){
         if(search(word).getId() == -1){
             wordRepository.save(new Word(word));
@@ -52,7 +80,7 @@ public class WordController {
         return new ResponseEntity<>("Word already exists in database", HttpStatus.CONFLICT);
     }
 
-    @PostMapping("/delete/{w}")
+    @PostMapping("/words/delete/{w}")
     public ResponseEntity<String> deleteWord(@PathVariable String word){
         if(search(word).getId() == -1){
             return new ResponseEntity<>("Word doesn't exist", HttpStatus.NOT_FOUND);
