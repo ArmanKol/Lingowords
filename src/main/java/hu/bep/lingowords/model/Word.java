@@ -15,12 +15,12 @@ public class Word {
 
     public Word(){}
 
-    public Word(long id,String word){
+    public Word(final long id, final String word){
         this.id = id;
         this.word = word;
     }
 
-    public Word(String word){
+    public Word(final String word){
         this.word = word;
     }
 

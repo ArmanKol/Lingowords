@@ -18,14 +18,16 @@ import java.util.Set;
 
 @RestController
 public class WordController {
-    private static Logger logger = LogManager.getLogger(WordController.class);
-    private Reader reader = new Reader();
+    private static final Logger LOGGER = LogManager.getLogger(WordController.class);
+    private final Reader reader = new Reader();
 
     @Autowired
     private WordRepository wordRepository;
 
     @GetMapping("/save/all")
     public ResponseEntity<String> saveAllWords(){
+        ResponseEntity<String> response;
+
         reader.readAllWordsFiles();
         Set<String> wordsNotSaved = new HashSet<>();
 
@@ -37,15 +39,19 @@ public class WordController {
             }
         }
 
-        if(wordsNotSaved.size() > 0){
-            return new ResponseEntity(wordsNotSaved, HttpStatus.CONFLICT);
+        if(!wordsNotSaved.isEmpty()){
+            response = new ResponseEntity(wordsNotSaved, HttpStatus.CONFLICT);
+        }else{
+            response = new ResponseEntity("All words saved", HttpStatus.OK);
         }
 
-        return new ResponseEntity("All words saved", HttpStatus.OK);
+        return response;
     }
 
     @GetMapping("/save/{fileName}")
     public ResponseEntity<Set<String>> saveWordsFromFile(@PathVariable String fileName){
+        ResponseEntity<Set<String>> response;
+
         URL url = reader.getWordsFile(fileName);
         Set<String> wordsNotSaved = new HashSet<>();
 
@@ -57,11 +63,13 @@ public class WordController {
             }
         }
 
-        if(wordsNotSaved.size() > 0){
-            return new ResponseEntity(wordsNotSaved, HttpStatus.CONFLICT);
+        if(!wordsNotSaved.isEmpty()){
+            response = new ResponseEntity(wordsNotSaved, HttpStatus.CONFLICT);
+        }else{
+            response = new ResponseEntity("All words saved", HttpStatus.OK);
         }
 
-        return new ResponseEntity("All words saved", HttpStatus.OK);
+        return response;
     }
 
     @GetMapping("/words")
@@ -71,35 +79,43 @@ public class WordController {
 
     @PostMapping("/words/add/{w}")
     public ResponseEntity<String> addWord(@PathVariable String word){
+        ResponseEntity<String> response;
+
         if(search(word).getId() == -1){
             wordRepository.save(new Word(word));
 
-            return new ResponseEntity<>("Word has been saved", HttpStatus.OK);
+            response = new ResponseEntity<>("Word has been saved", HttpStatus.OK);
+        }else{
+            response = new ResponseEntity<>("Word already exists in database", HttpStatus.CONFLICT);
         }
 
-        return new ResponseEntity<>("Word already exists in database", HttpStatus.CONFLICT);
+        return response;
     }
 
     @PostMapping("/words/delete/{w}")
     public ResponseEntity<String> deleteWord(@PathVariable String word){
+        ResponseEntity<String> response;
+
         if(search(word).getId() == -1){
-            return new ResponseEntity<>("Word doesn't exist", HttpStatus.NOT_FOUND);
+            response = new ResponseEntity<>("Word doesn't exist", HttpStatus.NOT_FOUND);
         }else{
             wordRepository.delete(new Word(word));
-            return new ResponseEntity<>("Word has been deleted", HttpStatus.OK);
+            response = new ResponseEntity<>("Word has been deleted", HttpStatus.OK);
         }
+
+        return response;
     }
 
-    @GetMapping("/words/{w}")
-    public Word search(@PathVariable String w){
-        try{
-            if(wordRepository.findWord(w) == null){
-                throw new NullPointerException();
-            }
-            return wordRepository.findWord(w);
-        }catch(NullPointerException npe){
-            return new Word(-1,"Word is not in database");
+    @GetMapping("/words/{word}")
+    public Word search(@PathVariable String word){
+        Word responseWord;
+
+        if(wordRepository.findWord(word) == null){
+            responseWord = new Word(-1,"Word is not in database");
+        }else{
+            responseWord = wordRepository.findWord(word);
         }
+        return responseWord;
     }
 
     @GetMapping("/words/randomword")
@@ -107,9 +123,7 @@ public class WordController {
         RandomIntGenerator randomGenerator = new RandomIntGenerator(wordRepository.getMinID(), wordRepository.getMaxID());
         int wordID = randomGenerator.getRandomNumber();
 
-        String word = wordRepository.findByID(wordID).getWord();
-
-        return word;
+        return wordRepository.findByID(wordID).getWord();
     }
 
 }

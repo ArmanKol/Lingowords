@@ -13,7 +13,7 @@ public class RandomIntGeneratorTest {
     @DisplayName("als min groter is dan max dan throw exception")
     void minGreaterThanMax(){
         assertThrows(InputMismatchException.class, () -> {
-            RandomIntGenerator generator = new RandomIntGenerator(10, 5);
+            new RandomIntGenerator(10, 5);
         });
     }
 
@@ -24,7 +24,7 @@ public class RandomIntGeneratorTest {
         RandomIntGenerator generator = new RandomIntGenerator(5,5);
 
         for(int x=0; x < 1000; x++){
-            assertTrue(generator.getRandomNumber() == 5);
+            assertSame(5, generator.getRandomNumber());
         }
     }
 

@@ -5,9 +5,9 @@ import java.util.Random;
 
 public class RandomIntGenerator {
 
-    private int min, max;
+    private final int min, max;
 
-    public RandomIntGenerator(int min, int max){
+    public RandomIntGenerator(final int min, final int max){
         if(min > max){
             throw new InputMismatchException("Min cannot be greater than max");
         }

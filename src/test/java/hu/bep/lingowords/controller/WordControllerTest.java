@@ -25,7 +25,7 @@ public class WordControllerTest {
         Word woord = controller.search("niet bestaand woord");
         long idWoord = woord.getId();
 
-        assertTrue(idWoord == -1);
+        assertSame(-1, idWoord);
     }
 
     @Test
@@ -33,7 +33,7 @@ public class WordControllerTest {
     void searchForExistingWord(){
         String existingWord = controller.getRandom();
 
-        assertTrue(controller.search(existingWord).getId() != -1);
+        assertNotSame(-1, controller.search(existingWord).getId());
     }
 
     @Test
@@ -56,10 +56,9 @@ public class WordControllerTest {
     @DisplayName("Delete woord dat bestaat returned OK")
     void deleteWordThatExists(){
         String randomWord = controller.getRandom();
-        System.out.println(randomWord);
         HttpStatus status = controller.deleteWord(randomWord).getStatusCode();
 
-        assertTrue(status.equals(HttpStatus.OK));
+        assertEquals(HttpStatus.OK, status);
         controller.addWord(randomWord);
     }
 

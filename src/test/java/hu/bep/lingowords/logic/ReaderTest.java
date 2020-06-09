@@ -2,16 +2,10 @@ package hu.bep.lingowords.logic;
 
 
 import com.google.common.io.Files;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
 
-import static org.mockito.Mockito.*;
-
-import java.io.IOException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -63,7 +57,7 @@ public class ReaderTest {
         URL url = reader.getWordsFile(fileName);
         reader.readWordsFileTxt(url);
 
-        assertTrue(reader.getWordsList().size() == 2);
+        assertSame(2, reader.getWordsList().size());
     }
 
     @Test

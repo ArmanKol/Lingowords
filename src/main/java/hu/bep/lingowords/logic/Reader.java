@@ -4,7 +4,6 @@ import com.google.common.io.Files;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.print.DocFlavor;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -13,12 +12,17 @@ import java.net.URL;
 import java.util.*;
 
 public class Reader {
-    private static Logger logger = LogManager.getLogger(Reader.class);
+    private static final Logger LOGGER = LogManager.getLogger(Reader.class);
     private List<String> wordsList = new ArrayList<>();
 
+    public Reader(){
+
+    }
+
     public Set<String> getListOfFiles(){
+        Set<String> returnfiles = new HashSet<String>();
+
         try{
-            Set<String> returnfiles = new HashSet<String>();
             URL path = this.getClass().getClassLoader().getResource("lingowords");
             String[] files = new File(path.toURI()).list();
 
@@ -28,15 +32,14 @@ public class Reader {
                     returnfiles.add(file);
                 }
             }
-
-            return returnfiles;
         }catch(URISyntaxException us){
-            logger.info(us.getInput()+" could not be parsed");
-            return new HashSet<String>();
+            LOGGER.error(us.getInput()+" could not be parsed");
         }
+
+        return returnfiles;
     }
 
-    public URL getWordsFile(String file){
+    public URL getWordsFile(final String file){
         URL url = this.getClass().getClassLoader().getResource("lingowords/"+file);
 
         if(url == null){
@@ -67,7 +70,7 @@ public class Reader {
     }
 
     //TODO: Regex verbeteren
-    public boolean readWordsFileTxt(URL input){
+    public boolean readWordsFileTxt(final URL input){
         boolean done;
 
         try{
@@ -89,10 +92,10 @@ public class Reader {
 
             done = true;
         }catch(IOException ioe){
-            logger.error("Problemen bij het openen/lezen van de file");
+            LOGGER.error("Problemen bij het openen/lezen van de file");
             done = false;
         }catch(NullPointerException npe){
-            logger.error("URL is niet geldig");
+            LOGGER.error("URL is niet geldig");
             done = false;
         }
 
@@ -100,7 +103,7 @@ public class Reader {
         return done;
     }
 
-    public boolean readWordsFileCsv(URL input, String delimiter){
+    public boolean readWordsFileCsv(final URL input, final String delimiter){
         boolean done;
 
         try{
@@ -125,17 +128,17 @@ public class Reader {
 
             done = true;
         }catch(IOException ioe){
-            logger.error("Problemen bij het openen/lezen van de file");
+            LOGGER.error("Problemen bij het openen/lezen van de file");
             done = false;
         }catch(NullPointerException npe){
-            logger.error("URL is niet geldig");
+            LOGGER.error("URL is niet geldig");
             done = false;
         }
 
         return done;
     }
 
-    private void clearList(boolean done){
+    private void clearList(final boolean done){
         if(done){
             wordsList.clear();
         }
