@@ -26,7 +26,7 @@ public class WordControllerTest {
     @DisplayName("Niet bestaand woord in database return -1")
     void searchForNotExistingWord(){
         Word woord = controller.search("niet bestaand woord");
-        long idWoord = woord.getId();
+        int idWoord = (int)woord.getId();
 
         assertSame(-1, idWoord);
     }
