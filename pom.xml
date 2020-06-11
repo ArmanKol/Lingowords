@@ -12,7 +12,7 @@
 
 	<groupId>hu.bep</groupId>
 	<artifactId>lingoWords</artifactId>
-	<version>0.2.0</version>
+	<version>0.3.0</version>
 	<name>lingoWords</name>
 	<description>Lingo game voor bep</description>
 	<packaging>jar</packaging>
@@ -68,13 +68,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.7.0-M1</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>24.1.1-jre</version>
@@ -107,6 +100,13 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<version>3.3.3</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.7.0-M1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
