@@ -1,18 +1,21 @@
 package hu.bep.lingowords.controller;
 
-import hu.bep.lingowords.LingoWordsApplication;
 import hu.bep.lingowords.model.Word;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(classes = LingoWordsApplication.class)
+@SpringBootTest
 @WebAppConfiguration
+@ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
 @DisplayName("Word controller")
 public class WordControllerTest {
     @Autowired

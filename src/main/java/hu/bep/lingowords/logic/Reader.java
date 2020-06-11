@@ -4,6 +4,7 @@ import com.google.common.io.Files;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.print.DocFlavor;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -67,6 +68,17 @@ public class Reader {
         }
 
         return returnValue;
+    }
+
+    public void readCorrectReader(URL url){
+        String extension = Files.getFileExtension(url.getFile());
+
+        if(extension.equals("csv")){
+            readWordsFileCsv(url, ",");
+        }else if(extension.equals("txt")){
+            readWordsFileTxt(url);
+        }
+
     }
 
     //TODO: Regex verbeteren

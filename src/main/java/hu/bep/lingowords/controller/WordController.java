@@ -40,20 +40,21 @@ public class WordController {
         }
 
         if(!wordsNotSaved.isEmpty()){
-            response = new ResponseEntity(wordsNotSaved, HttpStatus.CONFLICT);
+            response = new ResponseEntity<>(wordsNotSaved.toString(), HttpStatus.CONFLICT);
         }else{
-            response = new ResponseEntity("All words saved", HttpStatus.OK);
+            response = new ResponseEntity<>("All words saved", HttpStatus.OK);
         }
 
         return response;
     }
 
     @GetMapping("/save/{fileName}")
-    public ResponseEntity<Set<String>> saveWordsFromFile(@PathVariable String fileName){
-        ResponseEntity<Set<String>> response;
-
+    public ResponseEntity<String> saveWordsFromFile(@PathVariable String fileName){
+        ResponseEntity<String> response;
         URL url = reader.getWordsFile(fileName);
         Set<String> wordsNotSaved = new HashSet<>();
+
+        reader.readCorrectReader(url);
 
         for(String word : reader.getWordsList()){
             if(search(word).getId() == -1){
@@ -64,9 +65,9 @@ public class WordController {
         }
 
         if(!wordsNotSaved.isEmpty()){
-            response = new ResponseEntity(wordsNotSaved, HttpStatus.CONFLICT);
+            response = new ResponseEntity<>(wordsNotSaved.toString(), HttpStatus.CONFLICT);
         }else{
-            response = new ResponseEntity("All words saved", HttpStatus.OK);
+            response = new ResponseEntity<>("All words saved", HttpStatus.OK);
         }
 
         return response;
@@ -77,7 +78,7 @@ public class WordController {
         return wordRepository.findAll();
     }
 
-    @PostMapping("/words/add/{w}")
+    @PostMapping("/words/add/{word}")
     public ResponseEntity<String> addWord(@PathVariable String word){
         ResponseEntity<String> response;
 
@@ -92,7 +93,7 @@ public class WordController {
         return response;
     }
 
-    @PostMapping("/words/delete/{w}")
+    @DeleteMapping("/words/delete/{word}")
     public ResponseEntity<String> deleteWord(@PathVariable String word){
         ResponseEntity<String> response;
 
