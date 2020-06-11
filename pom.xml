@@ -28,7 +28,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<start-class>hu.bep.lingowords.LingoWordsApplication</start-class>
-		<java.version>9</java.version>
+		<java.version>14</java.version>
 	</properties>
 
 	<dependencies>
