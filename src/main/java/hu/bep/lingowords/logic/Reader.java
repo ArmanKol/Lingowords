@@ -14,14 +14,19 @@ import java.util.*;
 
 public class Reader {
     private static final Logger LOGGER = LogManager.getLogger(Reader.class);
-    private List<String> wordsList = new ArrayList<>();
+    private Set<String> wordsList = new HashSet<>();
+
+    private ReaderCsv readerCsv = new ReaderCsv(",");
+    private ReaderTxt readerTxt = new ReaderTxt();
 
     public Reader(){
 
     }
 
-    public Set<String> getListOfFiles(){
-        Set<String> returnfiles = new HashSet<String>();
+
+    //TODO: extensions niet hardcoden vervangen door builder.
+    public Set<String> readAllFilesInResource(){
+        Set<String> returnFiles = new HashSet<String>();
 
         try{
             URL path = this.getClass().getClassLoader().getResource("lingowords");
@@ -30,28 +35,29 @@ public class Reader {
             for(String file : files){
                 String extension = Files.getFileExtension(file);
                 if(extension.equals("txt") || extension.equals("csv")){
-                    returnfiles.add(file);
+                    returnFiles.add(file);
                 }
             }
         }catch(URISyntaxException us){
             LOGGER.error(us.getInput()+" could not be parsed");
         }
 
-        return returnfiles;
+        return returnFiles;
     }
 
-    public URL getWordsFile(final String file){
+    public URL getFile(final String file){
         URL url = this.getClass().getClassLoader().getResource("lingowords/"+file);
 
         if(url == null){
-            throw new NullPointerException("Het opgegeven bestand bestaat niet.");
+            LOGGER.error("The given filename doesnt exist! Check if it's in the correct directory or spelt correctly");
+            throw new NullPointerException("The given filename doesnt exist");
         }
 
         return url;
     }
 
     public boolean readAllWordsFiles(){
-        Set<String> listOfFiles = getListOfFiles();
+        Set<String> listOfFiles = readAllFilesInResource();
         boolean returnValue = false;
 
         for(String file: listOfFiles){
@@ -59,12 +65,16 @@ public class Reader {
             String extension = Files.getFileExtension(file);
 
             if(extension.equals("csv")){
-                readWordsFileCsv(url, ",");
+                readerCsv.readFile(url);
+                wordsList = readerCsv.getWordsList();
+                readerCsv.clearWords();
             }else if(extension.equals("txt")){
-                readWordsFileTxt(url);
+                readerTxt.readFile(url);
+                wordsList = readerTxt.getWordsList();
+                readerTxt.clearWords();
             }
 
-            returnValue = readWordsFileTxt(url);
+            returnValue = true;
         }
 
         return returnValue;
@@ -74,80 +84,15 @@ public class Reader {
         String extension = Files.getFileExtension(url.getFile());
 
         if(extension.equals("csv")){
-            readWordsFileCsv(url, ",");
+            readerCsv.readFile(url);
+            wordsList = readerCsv.getWordsList();
+            readerCsv.clearWords();
         }else if(extension.equals("txt")){
-            readWordsFileTxt(url);
+            readerTxt.readFile(url);
+            wordsList = readerTxt.getWordsList();
+            readerTxt.clearWords();
         }
 
-    }
-
-    //TODO: Regex verbeteren
-    public boolean readWordsFileTxt(final URL input){
-        boolean done;
-
-        try{
-            Scanner scanFile = new Scanner(input.openStream());
-            while(scanFile.hasNext()){
-                String word = scanFile.nextLine();
-
-                if(word.length() == 5 || word.length() == 6 || word.length() == 7){
-                    if(word.matches("([\\w]+['.-][\\w]+)|('\\w[A-Z-a-z]+)|(\\w[0-9]\\w[a-z])|(\\w+[éëäáíïúüöó]\\w+)")){
-                        continue;
-                    }
-                    if(word.matches("(\\b[a-z]\\w+)")){
-                        wordsList.add(word);
-                    }
-                }
-            }
-
-            scanFile.close();
-
-            done = true;
-        }catch(IOException ioe){
-            LOGGER.error("Problemen bij het openen/lezen van de file");
-            done = false;
-        }catch(NullPointerException npe){
-            LOGGER.error("URL is niet geldig");
-            done = false;
-        }
-
-        //clearList(done);
-        return done;
-    }
-
-    public boolean readWordsFileCsv(final URL input, final String delimiter){
-        boolean done;
-
-        try{
-            Scanner scanFile = new Scanner(input.openStream());
-            while(scanFile.hasNext()){
-                String wordLine = scanFile.nextLine();
-                String[] wordArray = wordLine.split(delimiter);
-
-                for(String word : wordArray){
-                    if(word.length() == 5 || word.length() == 6 || word.length() == 7){
-                        if(word.matches("([\\w]+['.-][\\w]+)|('\\w[A-Z-a-z]+)|(\\w[0-9]\\w[a-z])|(\\w+[éëäáíïúüöó]\\w+)")){
-                            continue;
-                        }
-                        if(word.matches("(\\b[a-z]\\w+)")){
-                            wordsList.add(word);
-                        }
-                    }
-                }
-            }
-
-            scanFile.close();
-
-            done = true;
-        }catch(IOException ioe){
-            LOGGER.error("Problemen bij het openen/lezen van de file");
-            done = false;
-        }catch(NullPointerException npe){
-            LOGGER.error("URL is niet geldig");
-            done = false;
-        }
-
-        return done;
     }
 
     private void clearList(final boolean done){
@@ -156,7 +101,7 @@ public class Reader {
         }
     }
 
-    public List<String> getWordsList(){
+    public Set<String> getWordsList(){
         return wordsList;
     }
 

@@ -11,59 +11,73 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Reader")
-public class ReaderTest {
+class ReaderTest {
 
     Reader reader = new Reader();
 
     @Test
     @DisplayName("een bestaand file geeft een URL terug")
-    void getValidFile(){
+    void getFile_FileExists_ValidUrl(){
         String fileName = "basiswoorden-gekeurd.txt";
-        URL url = reader.getWordsFile(fileName);
+        URL url = reader.getFile(fileName);
 
-        assertTrue(url instanceof URL);
+        assertTrue(url != null);
     }
 
     @Test
     @DisplayName("een niet bestaand file geeft een throw terug")
-    void getInvalidFile(){
+    void getFile_FileNotExists_ExceptionThrown(){
         String fileName = "niet_bestaand.txt";
-        assertThrows(NullPointerException.class, () -> reader.getWordsFile(fileName));
+        assertThrows(NullPointerException.class, () -> reader.getFile(fileName));
     }
 
     @Test
-    @DisplayName("Een invalid URL moet false returnen")
-    void invalidURLRead(){
+    @DisplayName("Een invalid txt URL moet false returnen")
+    void readFileTxt_UrlInvalid_ReturnFalse(){
         String fileName = "niet_bestaand.txt";
+        ReaderTxt readerTxt = new ReaderTxt();
         URL invalidURL = this.getClass().getClassLoader().getResource("lingowords/"+fileName);
 
 
-        assertFalse(reader.readWordsFileTxt(invalidURL));
+        assertFalse(readerTxt.readFile(invalidURL));
     }
 
     @Test
-    @DisplayName("Een valid URL moet true returnen")
-    void validURLRead(){
-        String fileName = "test.txt";
-        URL validURL = reader.getWordsFile(fileName);
+    @DisplayName("Een invalid csv URL moet false returnen")
+    void readFileCsv_UrlInvalid_ReturnFalse(){
+        String fileName = "niet_bestaand.csv";
+        ReaderCsv readerCsv = new ReaderCsv(",");
+        URL invalidURL = this.getClass().getClassLoader().getResource("lingowords/"+fileName);
 
-        assertTrue(reader.readWordsFileTxt(validURL));
+        assertFalse(readerCsv.readFile(invalidURL));
     }
 
     @Test
-    @DisplayName("test file bestaat uit 7 woorden zou 2 moeten terugsturen")
-    void checkWoorden(){
+    @DisplayName("Een valid txt URL moet true returnen")
+    void readFileTxt_UrlValid_ReturnTrue(){
         String fileName = "test.txt";
-        URL url = reader.getWordsFile(fileName);
-        reader.readWordsFileTxt(url);
+        ReaderTxt readerTxt = new ReaderTxt();
+        URL validURL = reader.getFile(fileName);
 
-        assertSame(2, reader.getWordsList().size());
+        assertTrue(readerTxt.readFile(validURL));
     }
 
+    @Test
+    @DisplayName("Een valid csv URL moet true returnen")
+    void readFileCsv_UrlValid_ReturnTrue(){
+        String fileName = "woorden2.csv";
+        ReaderCsv readerCsv = new ReaderCsv(",");
+        URL validURL = reader.getFile(fileName);
+
+        assertTrue(readerCsv.readFile(validURL));
+    }
+
+
+    //TODO: Test nog aanpassen na Reader te hebben aangepast.
     @Test
     @DisplayName("Test of alleen de toegestane file extensions in de lijst worden meegegeven")
-    void getBackOnlyAllowedExtensions(){
-        Set<String> files = reader.getListOfFiles();
+    void readAllFilesInResource_OnlyCsvTxt_ReturnsTxtCsvFiles(){
+        Set<String> files = reader.readAllFilesInResource();
 
         for(String file : files){
             String fileExtension = Files.getFileExtension(file);
@@ -72,23 +86,5 @@ public class ReaderTest {
         }
 
     }
-
-//    @Test
-//    @DisplayName("Het niet kunnen openen van een URL geeft done = false terug")
-//    void returnFalseWhenCantRead() throws IOException {
-//        Reader readermock = mock(Reader.class);
-//        URLConnection url = mock(URLConnection.class);
-//
-//        URL file = reader.getWordsFile("basiswoorden-gekeurd.txt");
-//
-//        Mockito.when(url.getURL()).thenReturn(file);
-//        Mockito.when(url.getInputStream()).thenThrow(new IOException());
-//        Mockito.when(readermock.readWordsFile(url.getURL())).thenCallRealMethod();
-//        URL newFile = url.getURL();
-//
-//        readermock.readWordsFile(newFile);
-//
-//        System.out.println(verify(readermock).readWordsFile(newFile));
-//    }
 
 }

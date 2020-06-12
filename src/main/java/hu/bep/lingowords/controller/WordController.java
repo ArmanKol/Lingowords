@@ -51,23 +51,27 @@ public class WordController {
     @GetMapping("/save/{fileName}")
     public ResponseEntity<String> saveWordsFromFile(@PathVariable String fileName){
         ResponseEntity<String> response;
-        URL url = reader.getWordsFile(fileName);
-        Set<String> wordsNotSaved = new HashSet<>();
+        try{
+            URL url = reader.getFile(fileName);
+            Set<String> wordsNotSaved = new HashSet<>();
 
-        reader.readCorrectReader(url);
+            reader.readCorrectReader(url);
 
-        for(String word : reader.getWordsList()){
-            if(search(word).getId() == -1){
-                wordRepository.save(new Word(word));
-            }else{
-                wordsNotSaved.add(word);
+            for(String word : reader.getWordsList()){
+                if(search(word).getId() == -1){
+                    wordRepository.save(new Word(word));
+                }else{
+                    wordsNotSaved.add(word);
+                }
             }
-        }
 
-        if(!wordsNotSaved.isEmpty()){
-            response = new ResponseEntity<>(wordsNotSaved.toString(), HttpStatus.CONFLICT);
-        }else{
-            response = new ResponseEntity<>("All words saved", HttpStatus.OK);
+            if(!wordsNotSaved.isEmpty()){
+                response = new ResponseEntity<>(wordsNotSaved.toString(), HttpStatus.CONFLICT);
+            }else{
+                response = new ResponseEntity<>("All words saved", HttpStatus.OK);
+            }
+        }catch(NullPointerException nullPointerException){
+            response = new ResponseEntity<>("File is not found", HttpStatus.NOT_FOUND);
         }
 
         return response;
