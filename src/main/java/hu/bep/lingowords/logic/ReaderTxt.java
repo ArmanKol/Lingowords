@@ -45,7 +45,7 @@ public class ReaderTxt implements IReader{
     }
 
     @Override
-    public boolean clearWords() {
-        return false;
+    public void clearList() {
+        words.clear();
     }
 }

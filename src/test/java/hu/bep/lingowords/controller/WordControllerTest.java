@@ -101,16 +101,15 @@ class WordControllerTest {
         String existingFile = "woorden2.csv";
 
         ResponseEntity response = controller.saveWordsFromFile(existingFile);
-
         assertSame(HttpStatus.CONFLICT, response.getStatusCode());
     }
 
     @Test
-    @DisplayName("Alle files uitlezen geeft een Conflict. Sommige woorden bestaan al.")
-    void readFiles_WithDuplicates_HttpStatusConflict(){
+    @DisplayName("Alle files uitlezen geeft een Ok. Woorden die nog niet in de database zitten")
+    void readFiles_WithoutDuplicates_HttpStatusOk(){
         ResponseEntity response = controller.saveAllWords();
 
-        assertSame(HttpStatus.CONFLICT, response.getStatusCode());
+        assertSame(HttpStatus.OK, response.getStatusCode());
     }
 
 }

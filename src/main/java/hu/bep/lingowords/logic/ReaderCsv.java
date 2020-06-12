@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class ReaderCsv implements IReader{
     private static final Logger LOGGER = LogManager.getLogger(Reader.class);
-    private final Set<String> words = new HashSet<>();
+    private final Set<String> words = new HashSet<String>();
 
     private String delimiter;
 
@@ -55,7 +55,7 @@ public class ReaderCsv implements IReader{
     }
 
     @Override
-    public boolean clearWords() {
-        return false;
+    public void clearList() {
+        words.clear();
     }
 }

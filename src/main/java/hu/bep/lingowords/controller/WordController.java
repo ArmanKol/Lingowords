@@ -19,7 +19,7 @@ import java.util.Set;
 @RestController
 public class WordController {
     private static final Logger LOGGER = LogManager.getLogger(WordController.class);
-    private final Reader reader = new Reader();
+    private final Reader reader = new Reader.ReaderBuilder().addExtension("txt").addExtension("csv").build();
 
     @Autowired
     private WordRepository wordRepository;
@@ -28,10 +28,10 @@ public class WordController {
     public ResponseEntity<String> saveAllWords(){
         ResponseEntity<String> response;
 
-        reader.readAllWordsFiles();
+        Set<String> words = reader.readAllWordsFiles();
         Set<String> wordsNotSaved = new HashSet<>();
 
-        for(String word : reader.getWordsList()){
+        for(String word : words){
             if(search(word).getId() == -1){
                 wordRepository.save(new Word(word));
             }else{
@@ -55,9 +55,7 @@ public class WordController {
             URL url = reader.getFile(fileName);
             Set<String> wordsNotSaved = new HashSet<>();
 
-            reader.readCorrectReader(url);
-
-            for(String word : reader.getWordsList()){
+            for(String word : reader.readCorrectReader(url)){
                 if(search(word).getId() == -1){
                     wordRepository.save(new Word(word));
                 }else{

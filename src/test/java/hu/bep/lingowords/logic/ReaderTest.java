@@ -12,13 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Reader")
 class ReaderTest {
-
-    Reader reader = new Reader();
+    private Reader reader = new Reader.ReaderBuilder().addExtension("csv").addExtension("txt").build();
 
     @Test
     @DisplayName("een bestaand file geeft een URL terug")
     void getFile_FileExists_ValidUrl(){
-        String fileName = "basiswoorden-gekeurd.txt";
+        String fileName = "test.txt";
         URL url = reader.getFile(fileName);
 
         assertTrue(url != null);
@@ -72,8 +71,6 @@ class ReaderTest {
         assertTrue(readerCsv.readFile(validURL));
     }
 
-
-    //TODO: Test nog aanpassen na Reader te hebben aangepast.
     @Test
     @DisplayName("Test of alleen de toegestane file extensions in de lijst worden meegegeven")
     void readAllFilesInResource_OnlyCsvTxt_ReturnsTxtCsvFiles(){

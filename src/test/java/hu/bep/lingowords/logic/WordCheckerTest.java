@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Reader")
 class WordCheckerTest {
-    private Reader reader = new Reader();
+    private Reader reader = new Reader.ReaderBuilder().addExtension("csv").addExtension("txt").build();
 
     @Test
     @DisplayName("Woorden met de lengte 5,6 en 7 worden gereturned")
@@ -41,9 +41,7 @@ class WordCheckerTest {
         input.add("paashaas");
         input.add("telkaart");
 
-        wordChecker.checkWords(input);
-
-        assertSame(6, wordChecker.getWordsList().size());
+        assertSame(6, wordChecker.checkWords(input).size());
     }
 
     @Test
@@ -60,9 +58,7 @@ class WordCheckerTest {
         input.add("bieër");
         input.add("bakker?");
 
-        wordChecker.checkWords(input);
-
-        assertSame(2, wordChecker.getWordsList().size());
+        assertSame(2, wordChecker.checkWords(input).size());
     }
 
 }

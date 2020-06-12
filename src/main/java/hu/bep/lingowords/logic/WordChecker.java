@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class WordChecker {
-    private final Set<String> wordsList = new HashSet<>();
     private Set<Integer> wordLenghts = new HashSet<>();
 
 
@@ -12,8 +11,8 @@ public class WordChecker {
         this.wordLenghts = builder.wordLenghts;
     }
 
-    public boolean checkWords(Set<String> words){
-        boolean done = false;
+    public Set<String> checkWords(Set<String> words){
+        Set<String> correctWords = new HashSet<>();
 
         for(String word : words){
             if(wordLenghts.contains(word.length())){
@@ -21,15 +20,11 @@ public class WordChecker {
                     continue;
                 }
                 if(word.matches("(\\b[a-z]\\w+)")){
-                    wordsList.add(word);
+                    correctWords.add(word);
                 }
             }
         }
-        return done;
-    }
-
-    public Set<String> getWordsList(){
-        return wordsList;
+        return correctWords;
     }
 
     public static class WordCheckerBuilder{

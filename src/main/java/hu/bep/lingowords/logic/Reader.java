@@ -15,18 +15,19 @@ import java.util.*;
 public class Reader {
     private static final Logger LOGGER = LogManager.getLogger(Reader.class);
     private Set<String> wordsList = new HashSet<>();
+    private Set<String> fileExtensions = new HashSet<>();
 
     private ReaderCsv readerCsv = new ReaderCsv(",");
     private ReaderTxt readerTxt = new ReaderTxt();
 
-    public Reader(){
+    private WordChecker wordChecker = new WordChecker.WordCheckerBuilder().addLength(5).addLength(6).addLength(7).build();
 
+    private Reader(ReaderBuilder readerBuilder){
+        readerBuilder.fileExtensions = fileExtensions;
     }
 
-
-    //TODO: extensions niet hardcoden vervangen door builder.
     public Set<String> readAllFilesInResource(){
-        Set<String> returnFiles = new HashSet<String>();
+        Set<String> allFiles = new HashSet<>();
 
         try{
             URL path = this.getClass().getClassLoader().getResource("lingowords");
@@ -34,15 +35,15 @@ public class Reader {
 
             for(String file : files){
                 String extension = Files.getFileExtension(file);
-                if(extension.equals("txt") || extension.equals("csv")){
-                    returnFiles.add(file);
+                if(fileExtensions.contains(extension)){
+                    allFiles.add(file);
                 }
             }
         }catch(URISyntaxException us){
             LOGGER.error(us.getInput()+" could not be parsed");
         }
 
-        return returnFiles;
+        return allFiles;
     }
 
     public URL getFile(final String file){
@@ -56,9 +57,9 @@ public class Reader {
         return url;
     }
 
-    public boolean readAllWordsFiles(){
+    public Set<String> readAllWordsFiles(){
+        Set<String> validWords = new HashSet<String>();
         Set<String> listOfFiles = readAllFilesInResource();
-        boolean returnValue = false;
 
         for(String file: listOfFiles){
             URL url = this.getClass().getClassLoader().getResource("lingowords/"+file);
@@ -66,43 +67,45 @@ public class Reader {
 
             if(extension.equals("csv")){
                 readerCsv.readFile(url);
-                wordsList = readerCsv.getWordsList();
-                readerCsv.clearWords();
+                validWords.addAll(wordChecker.checkWords(readerCsv.getWordsList()));
+                readerCsv.clearList();
             }else if(extension.equals("txt")){
                 readerTxt.readFile(url);
-                wordsList = readerTxt.getWordsList();
-                readerTxt.clearWords();
+                validWords.addAll(wordChecker.checkWords(readerTxt.getWordsList()));
+                readerTxt.clearList();
             }
-
-            returnValue = true;
         }
 
-        return returnValue;
+        return validWords;
     }
 
-    public void readCorrectReader(URL url){
+    public Set<String> readCorrectReader(URL url){
+        Set<String> validWords = new HashSet<>();
         String extension = Files.getFileExtension(url.getFile());
 
         if(extension.equals("csv")){
             readerCsv.readFile(url);
-            wordsList = readerCsv.getWordsList();
-            readerCsv.clearWords();
+            validWords = wordChecker.checkWords(readerCsv.getWordsList());
+            readerCsv.clearList();
         }else if(extension.equals("txt")){
             readerTxt.readFile(url);
-            wordsList = readerTxt.getWordsList();
-            readerTxt.clearWords();
+            validWords =  wordChecker.checkWords(readerTxt.getWordsList());
+            readerTxt.clearList();
         }
 
+        return validWords;
     }
 
-    private void clearList(final boolean done){
-        if(done){
-            wordsList.clear();
+    public static class ReaderBuilder{
+        private Set<String> fileExtensions = new HashSet<>();
+
+        public Reader.ReaderBuilder addExtension(String extension){
+            fileExtensions.add(extension);
+            return this;
+        }
+
+        public Reader build(){
+            return new Reader(this);
         }
     }
-
-    public Set<String> getWordsList(){
-        return wordsList;
-    }
-
 }
