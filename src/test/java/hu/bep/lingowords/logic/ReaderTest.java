@@ -20,7 +20,7 @@ class ReaderTest {
         String fileName = "test.txt";
         URL url = reader.getFile(fileName);
 
-        assertTrue(url != null);
+        assertNotNull(url);
     }
 
     @Test
@@ -76,10 +76,13 @@ class ReaderTest {
     void readAllFilesInResource_OnlyCsvTxt_ReturnsTxtCsvFiles(){
         Set<String> files = reader.readAllFilesInResource();
 
+        String csvExtension = "csv";
+        String txtExtension = "txt";
+
         for(String file : files){
             String fileExtension = Files.getFileExtension(file);
 
-            assertTrue(fileExtension.equals("txt") || fileExtension.equals("csv"));
+            assertTrue(txtExtension.equals(fileExtension) || csvExtension.equals(fileExtension));
         }
 
     }

@@ -5,7 +5,9 @@ import java.util.Random;
 
 public class RandomIntGenerator {
 
-    private final int min, max;
+    private final int min;
+    private final int max;
+    private Random random = new Random();
 
     public RandomIntGenerator(final int min, final int max){
         if(min > max){
@@ -18,7 +20,6 @@ public class RandomIntGenerator {
 
     public int getRandomNumber(){
         int randomInt;
-        Random random = new Random();
 
         randomInt = random.nextInt(max - min + 1) + min;
 

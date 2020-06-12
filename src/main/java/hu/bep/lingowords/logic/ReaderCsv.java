@@ -11,8 +11,8 @@ import java.util.Scanner;
 import java.util.Set;
 
 public class ReaderCsv implements IReader{
-    private static final Logger LOGGER = LogManager.getLogger(Reader.class);
-    private final Set<String> words = new HashSet<String>();
+    private static final Logger LOGGER = LogManager.getLogger(ReaderCsv.class);
+    private final Set<String> words = new HashSet<>();
 
     private String delimiter;
 
@@ -24,16 +24,13 @@ public class ReaderCsv implements IReader{
     public boolean readFile(URL input) {
         boolean done = false;
 
-        try{
-            Scanner scanFile = new Scanner(input.openStream());
+        try(Scanner scanFile = new Scanner(input.openStream())){
             while(scanFile.hasNext()){
                 String wordLine = scanFile.nextLine();
                 String[] wordArray = wordLine.split(delimiter);
 
                 words.addAll(Arrays.asList(wordArray));
             }
-
-            scanFile.close();
 
             done = true;
         }catch(IOException ioe){

@@ -4,8 +4,6 @@ import hu.bep.lingowords.logic.Reader;
 import hu.bep.lingowords.logic.RandomIntGenerator;
 import hu.bep.lingowords.model.Word;
 import hu.bep.lingowords.repository.WordRepository;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +16,6 @@ import java.util.Set;
 
 @RestController
 public class WordController {
-    private static final Logger LOGGER = LogManager.getLogger(WordController.class);
     private final Reader reader = new Reader.ReaderBuilder().addExtension("txt").addExtension("csv").build();
 
     @Autowired
@@ -68,7 +65,7 @@ public class WordController {
             }else{
                 response = new ResponseEntity<>("All words saved", HttpStatus.OK);
             }
-        }catch(NullPointerException nullPointerException){
+        }catch(NullPointerException npe){
             response = new ResponseEntity<>("File is not found", HttpStatus.NOT_FOUND);
         }
 

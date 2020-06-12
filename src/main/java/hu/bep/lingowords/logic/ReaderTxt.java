@@ -10,7 +10,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 public class ReaderTxt implements IReader{
-    private static final Logger LOGGER = LogManager.getLogger(Reader.class);
+    private static final Logger LOGGER = LogManager.getLogger(ReaderTxt.class);
     private final Set<String> words = new HashSet<>();
 
     public ReaderTxt(){
@@ -21,13 +21,10 @@ public class ReaderTxt implements IReader{
     public boolean readFile(URL input) {
         boolean done = false;
 
-        try{
-            Scanner scanFile = new Scanner(input.openStream());
+        try(Scanner scanFile = new Scanner(input.openStream())){
             while(scanFile.hasNext()){
                 words.add(scanFile.nextLine());
             }
-
-            scanFile.close();
 
             done = true;
         }catch(IOException ioe){

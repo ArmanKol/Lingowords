@@ -4,9 +4,7 @@ import com.google.common.io.Files;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.print.DocFlavor;
 import java.io.File;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
@@ -14,7 +12,6 @@ import java.util.*;
 
 public class Reader {
     private static final Logger LOGGER = LogManager.getLogger(Reader.class);
-    private Set<String> wordsList = new HashSet<>();
     private Set<String> fileExtensions = new HashSet<>();
 
     private ReaderCsv readerCsv = new ReaderCsv(",");
@@ -40,7 +37,7 @@ public class Reader {
                 }
             }
         }catch(URISyntaxException us){
-            LOGGER.error(us.getInput()+" could not be parsed");
+            LOGGER.error("Could not be parsed");
         }
 
         return allFiles;
@@ -58,18 +55,21 @@ public class Reader {
     }
 
     public Set<String> readAllWordsFiles(){
-        Set<String> validWords = new HashSet<String>();
+        Set<String> validWords = new HashSet<>();
         Set<String> listOfFiles = readAllFilesInResource();
 
         for(String file: listOfFiles){
             URL url = this.getClass().getClassLoader().getResource("lingowords/"+file);
             String extension = Files.getFileExtension(file);
 
-            if(extension.equals("csv")){
+            String csvExtension = "csv";
+            String txtExtension = "txt";
+
+            if(csvExtension.equals(extension)){
                 readerCsv.readFile(url);
                 validWords.addAll(wordChecker.checkWords(readerCsv.getWordsList()));
                 readerCsv.clearList();
-            }else if(extension.equals("txt")){
+            }else if(txtExtension.equals(extension)){
                 readerTxt.readFile(url);
                 validWords.addAll(wordChecker.checkWords(readerTxt.getWordsList()));
                 readerTxt.clearList();
@@ -83,11 +83,14 @@ public class Reader {
         Set<String> validWords = new HashSet<>();
         String extension = Files.getFileExtension(url.getFile());
 
-        if(extension.equals("csv")){
+        String csvExtension = "csv";
+        String txtExtension = "txt";
+
+        if(csvExtension.equals(extension)){
             readerCsv.readFile(url);
             validWords = wordChecker.checkWords(readerCsv.getWordsList());
             readerCsv.clearList();
-        }else if(extension.equals("txt")){
+        }else if(txtExtension.equals(extension)){
             readerTxt.readFile(url);
             validWords =  wordChecker.checkWords(readerTxt.getWordsList());
             readerTxt.clearList();

@@ -3,20 +3,18 @@ package hu.bep.lingowords.logic;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("Reader")
+@DisplayName("Word checker")
 class WordCheckerTest {
-    private Reader reader = new Reader.ReaderBuilder().addExtension("csv").addExtension("txt").build();
 
     @Test
     @DisplayName("Woorden met de lengte 5,6 en 7 worden gereturned")
     void checkWords_LengthFiveSixSeven_ReturnCorrectWords(){
-        Set<String> input = new HashSet<String>();
+        Set<String> input = new HashSet<>();
         WordChecker wordChecker = new WordChecker.WordCheckerBuilder().addLength(5).addLength(6).addLength(7).build();
 
         //Woorden met 4 letters
@@ -47,7 +45,7 @@ class WordCheckerTest {
     @Test
     @DisplayName("test file bestaat uit 7 woorden zou 2 moeten terugsturen")
     void checkWords_ValidWords_ReturnValidWords(){
-        Set<String> input = new HashSet<String>();
+        Set<String> input = new HashSet<>();
         WordChecker wordChecker = new WordChecker.WordCheckerBuilder().addLength(5).addLength(6).addLength(7).build();
 
         input.add("papier,");
