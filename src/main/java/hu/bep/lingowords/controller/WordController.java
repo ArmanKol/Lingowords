@@ -19,6 +19,8 @@ import java.util.Set;
 public class WordController {
     private final ReaderMain readerMain = new ReaderMain.ReaderBuilder().addExtension("txt").addExtension("csv").build();
 
+    private static final String MESSAGE = "message";
+
     @Autowired
     private WordRepository wordRepository;
 
@@ -49,6 +51,8 @@ public class WordController {
     @GetMapping("/api/save/{fileName}")
     public ResponseEntity<String> saveWordsFromFile(@PathVariable String fileName){
         ResponseEntity<String> response;
+        JsonObject body = new JsonObject();
+
         try{
             URL url = readerMain.getFile(fileName);
             Set<String> wordsNotSaved = new HashSet<>();
@@ -64,10 +68,12 @@ public class WordController {
             if(!wordsNotSaved.isEmpty()){
                 response = new ResponseEntity<>(wordsNotSaved.toString(), HttpStatus.CONFLICT);
             }else{
-                response = new ResponseEntity<>("All words saved", HttpStatus.OK);
+                body.addProperty(MESSAGE, "All words saved");
+                response = new ResponseEntity<>(body.toString(), HttpStatus.OK);
             }
         }catch(NullPointerException npe){
-            response = new ResponseEntity<>("File is not found", HttpStatus.NOT_FOUND);
+            body.addProperty(MESSAGE, "File is not found");
+            response = new ResponseEntity<>(body.toString(), HttpStatus.NOT_FOUND);
         }
 
         return response;
@@ -84,11 +90,11 @@ public class WordController {
         JsonObject body = new JsonObject();
 
         if(search(word).getId() == -1 && readerMain.getWordChecker().checkSingleWord(word)){
-            body.addProperty("message", "Word has been saved");
+            body.addProperty(MESSAGE, "Word has been saved");
             wordRepository.save(new Word(word));
             response = new ResponseEntity<>(body.toString(), HttpStatus.OK);
         }else{
-            body.addProperty("message", "Word already exists in database");
+            body.addProperty(MESSAGE, "Word already exists in database");
             response = new ResponseEntity<>(body.toString(), HttpStatus.CONFLICT);
         }
 
@@ -103,10 +109,10 @@ public class WordController {
         Word foundWord = search(word);
 
         if(foundWord.getId() == -1){
-            body.addProperty("message", "Word doesn't exist");
+            body.addProperty(MESSAGE, "Word doesn't exist");
             response = new ResponseEntity<>(body.toString(), HttpStatus.NOT_FOUND);
         }else{
-            body.addProperty("message", "Word has been deleted");
+            body.addProperty(MESSAGE, "Word has been deleted");
             wordRepository.delete(foundWord);
             response = new ResponseEntity<>(body.toString(), HttpStatus.OK);
         }

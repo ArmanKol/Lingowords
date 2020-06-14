@@ -50,14 +50,6 @@ class WordControllerTest {
     }
 
     @Test
-    @DisplayName("Een bestaand woord kan niet weer opgeslagen worden in de database en returned CONFLICT")
-    void addWord_WordExists_HttpStatusConflict(){
-        String existingWord = controller.getRandom();
-
-        assertEquals(HttpStatus.CONFLICT, controller.addWord(existingWord).getStatusCode());
-    }
-
-    @Test
     @DisplayName("Een nieuw woord opslaan geeft OK status terug")
     void addWord_NotExists_HttpStatusOk(){
         String inputWord = "eters";
@@ -118,6 +110,14 @@ class WordControllerTest {
         ResponseEntity response = controller.saveAllWords();
         System.out.println(response);
         assertSame(HttpStatus.CONFLICT, response.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Een bestaand woord kan niet weer opgeslagen worden in de database en returned CONFLICT")
+    void addWord_WordExists_HttpStatusConflict(){
+        String existingWord = controller.getRandom();
+
+        assertEquals(HttpStatus.CONFLICT, controller.addWord(existingWord).getStatusCode());
     }
 
 }

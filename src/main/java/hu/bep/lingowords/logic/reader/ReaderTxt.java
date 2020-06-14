@@ -14,7 +14,7 @@ public class ReaderTxt implements IReader{
     private final Set<String> words = new HashSet<>();
 
     public ReaderTxt(){
-
+        //Default constructor
     }
 
     @Override
