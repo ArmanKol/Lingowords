@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class WordChecker {
-    private Set<Integer> wordLenghts = new HashSet<>();
+    private Set<Integer> wordLenghts;
 
 
     private WordChecker(WordCheckerBuilder builder){
@@ -28,7 +28,7 @@ public class WordChecker {
     }
 
     public static class WordCheckerBuilder{
-        private Set<Integer> wordLenghts = new HashSet<>();
+        private final Set<Integer> wordLenghts = new HashSet<>();
 
         public WordCheckerBuilder addLength(int length){
             wordLenghts.add(length);

@@ -1,6 +1,6 @@
 package hu.bep.lingowords.controller;
 
-import hu.bep.lingowords.logic.Reader;
+import hu.bep.lingowords.logic.ReaderMain;
 import hu.bep.lingowords.logic.RandomIntGenerator;
 import hu.bep.lingowords.model.Word;
 import hu.bep.lingowords.repository.WordRepository;
@@ -16,7 +16,7 @@ import java.util.Set;
 
 @RestController
 public class WordController {
-    private final Reader reader = new Reader.ReaderBuilder().addExtension("txt").addExtension("csv").build();
+    private final ReaderMain readerMain = new ReaderMain.ReaderBuilder().addExtension("txt").addExtension("csv").build();
 
     @Autowired
     private WordRepository wordRepository;
@@ -25,7 +25,7 @@ public class WordController {
     public ResponseEntity<String> saveAllWords(){
         ResponseEntity<String> response;
 
-        Set<String> words = reader.readAllWordsFiles();
+        Set<String> words = readerMain.readAllWordsFiles();
         Set<String> wordsNotSaved = new HashSet<>();
 
         for(String word : words){
@@ -49,10 +49,10 @@ public class WordController {
     public ResponseEntity<String> saveWordsFromFile(@PathVariable String fileName){
         ResponseEntity<String> response;
         try{
-            URL url = reader.getFile(fileName);
+            URL url = readerMain.getFile(fileName);
             Set<String> wordsNotSaved = new HashSet<>();
 
-            for(String word : reader.readCorrectReader(url)){
+            for(String word : readerMain.readCorrectReader(url)){
                 if(search(word).getId() == -1){
                     wordRepository.save(new Word(word));
                 }else{

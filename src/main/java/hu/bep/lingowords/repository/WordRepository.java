@@ -11,17 +11,18 @@ import java.util.List;
 
 @Repository
 public interface WordRepository extends JpaRepository<Word, Long> {
-    public List<Word> findAll();
+    List<Word> findAll();
 
     @Query(value = "select wd.id, wd.word from word wd where wd.word = :word", nativeQuery = true)
-    public Word findWord(@Param("word") String word);
+    Word findWord(@Param("word") String word);
 
     @Query(value = "select MIN(id) from word;", nativeQuery = true)
-    public int getMinID();
+    int getMinID();
 
     @Query(value = "select MAX(id) from word;", nativeQuery = true)
-    public int getMaxID();
+    int getMaxID();
 
     @Query(value = "select wd.id, wd.word from word wd where wd.id = :id", nativeQuery = true)
-    public Word findByID(@Param("id") int id);
+    Word findByID(@Param("id") int id);
+
 }

@@ -1,6 +1,9 @@
 package hu.bep.lingowords.logic;
 
 import com.google.common.io.Files;
+import hu.bep.lingowords.logic.reader.IReader;
+import hu.bep.lingowords.logic.reader.ReaderCsv;
+import hu.bep.lingowords.logic.reader.ReaderTxt;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -10,17 +13,17 @@ import java.net.URL;
 
 import java.util.*;
 
-public class Reader {
-    private static final Logger LOGGER = LogManager.getLogger(Reader.class);
-    private Set<String> fileExtensions = new HashSet<>();
+public class ReaderMain {
+    private static final Logger LOGGER = LogManager.getLogger(ReaderMain.class);
+    private Set<String> fileExtensions;
 
-    private ReaderCsv readerCsv = new ReaderCsv(",");
-    private ReaderTxt readerTxt = new ReaderTxt();
+    private IReader readerCsv = new ReaderCsv(",");
+    private IReader readerTxt = new ReaderTxt();
 
     private WordChecker wordChecker = new WordChecker.WordCheckerBuilder().addLength(5).addLength(6).addLength(7).build();
 
-    private Reader(ReaderBuilder readerBuilder){
-        readerBuilder.fileExtensions = fileExtensions;
+    private ReaderMain(ReaderBuilder readerBuilder){
+        fileExtensions = readerBuilder.fileExtensions;
     }
 
     public Set<String> readAllFilesInResource(){
@@ -100,15 +103,15 @@ public class Reader {
     }
 
     public static class ReaderBuilder{
-        private Set<String> fileExtensions = new HashSet<>();
+        private final Set<String> fileExtensions = new HashSet<>();
 
-        public Reader.ReaderBuilder addExtension(String extension){
+        public ReaderMain.ReaderBuilder addExtension(String extension){
             fileExtensions.add(extension);
             return this;
         }
 
-        public Reader build(){
-            return new Reader(this);
+        public ReaderMain build(){
+            return new ReaderMain(this);
         }
     }
 }

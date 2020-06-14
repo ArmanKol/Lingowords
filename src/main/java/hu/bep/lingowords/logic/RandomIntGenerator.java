@@ -7,7 +7,7 @@ public class RandomIntGenerator {
 
     private final int min;
     private final int max;
-    private Random random = new Random();
+    private final Random random = new Random();
 
     public RandomIntGenerator(final int min, final int max){
         if(min > max){

@@ -1,4 +1,4 @@
-package hu.bep.lingowords.logic;
+package hu.bep.lingowords.logic.reader;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

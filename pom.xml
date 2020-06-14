@@ -12,7 +12,7 @@
 
 	<groupId>hu.bep</groupId>
 	<artifactId>lingoWords</artifactId>
-	<version>0.5.2</version>
+	<version>0.5.3</version>
 	<name>lingoWords</name>
 	<description>Lingo game voor bep</description>
 	<packaging>jar</packaging>
@@ -114,6 +114,12 @@
 			<version>5.7.0-M1</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.pitest</groupId>
+			<artifactId>pitest-maven</artifactId>
+			<version>1.5.2</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -124,6 +130,19 @@
 				<configuration>
 					<mainClass>${start-class}</mainClass>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.pitest</groupId>
+				<artifactId>pitest-maven</artifactId>
+				<version>1.5.2</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.pitest</groupId>
+						<artifactId>pitest-junit5-plugin</artifactId>
+						<version>0.11</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 
 			<plugin>
