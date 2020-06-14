@@ -106,7 +106,7 @@ class WordControllerTest {
     @DisplayName("Alle files uitlezen geeft een Conflict. Dezelfde woorden als in database")
     void readFiles_WithoutDuplicates_HttpStatusOk(){
         ResponseEntity response = controller.saveAllWords();
-
+        System.out.println(response);
         assertSame(HttpStatus.CONFLICT, response.getStatusCode());
     }
 

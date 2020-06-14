@@ -1,5 +1,6 @@
 package hu.bep.lingowords.controller;
 
+import com.google.gson.JsonObject;
 import hu.bep.lingowords.logic.ReaderMain;
 import hu.bep.lingowords.logic.RandomIntGenerator;
 import hu.bep.lingowords.model.Word;
@@ -21,7 +22,7 @@ public class WordController {
     @Autowired
     private WordRepository wordRepository;
 
-    @GetMapping("/save/all")
+    @GetMapping("/api/save/all")
     public ResponseEntity<String> saveAllWords(){
         ResponseEntity<String> response;
 
@@ -45,7 +46,7 @@ public class WordController {
         return response;
     }
 
-    @GetMapping("/save/{fileName}")
+    @GetMapping("/api/save/{fileName}")
     public ResponseEntity<String> saveWordsFromFile(@PathVariable String fileName){
         ResponseEntity<String> response;
         try{
@@ -72,41 +73,48 @@ public class WordController {
         return response;
     }
 
-    @GetMapping("/words")
+    @GetMapping("/api/words")
     public List<Word> getWords(){
         return wordRepository.findAll();
     }
 
-    @PostMapping("/words/add/{word}")
-    public ResponseEntity<String> addWord(@PathVariable String word){
+    @PostMapping("/api/words/add")
+    public ResponseEntity<String> addWord(@RequestBody String word){
         ResponseEntity<String> response;
+        JsonObject body = new JsonObject();
 
         if(search(word).getId() == -1){
-            wordRepository.save(new Word(word));
-
-            response = new ResponseEntity<>("Word has been saved", HttpStatus.OK);
+            body.addProperty("message", "Word has been saved");
+            //wordRepository.save(new Word(word));
+            response = new ResponseEntity<>(body.toString(), HttpStatus.OK);
         }else{
-            response = new ResponseEntity<>("Word already exists in database", HttpStatus.CONFLICT);
+            body.addProperty("message", "Word already exists in database");
+            response = new ResponseEntity<>(body.toString(), HttpStatus.CONFLICT);
         }
 
         return response;
     }
 
-    @DeleteMapping("/words/delete/{word}")
-    public ResponseEntity<String> deleteWord(@PathVariable String word){
+    @DeleteMapping("/api/words/delete")
+    public ResponseEntity<String> deleteWord(@RequestBody String word){
         ResponseEntity<String> response;
+        JsonObject body = new JsonObject();
 
-        if(search(word).getId() == -1){
-            response = new ResponseEntity<>("Word doesn't exist", HttpStatus.NOT_FOUND);
+        Word foundWord = search(word);
+
+        if(foundWord.getId() == -1){
+            body.addProperty("message", "Word doesn't exist");
+            response = new ResponseEntity<>(body.toString(), HttpStatus.NOT_FOUND);
         }else{
-            wordRepository.delete(new Word(word));
-            response = new ResponseEntity<>("Word has been deleted", HttpStatus.OK);
+            body.addProperty("message", "Word has been deleted");
+            wordRepository.delete(foundWord);
+            response = new ResponseEntity<>(body.toString(), HttpStatus.OK);
         }
 
         return response;
     }
 
-    @GetMapping("/words/{word}")
+    @GetMapping("/api/words/{word}")
     public Word search(@PathVariable String word){
         Word responseWord;
 
@@ -118,7 +126,7 @@ public class WordController {
         return responseWord;
     }
 
-    @GetMapping("/words/randomword")
+    @GetMapping("/api/words/randomword")
     public String getRandom(){
         RandomIntGenerator randomGenerator = new RandomIntGenerator(wordRepository.getMinID(), wordRepository.getMaxID());
         int wordID = randomGenerator.getRandomNumber();

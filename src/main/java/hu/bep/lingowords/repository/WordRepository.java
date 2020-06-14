@@ -24,5 +24,4 @@ public interface WordRepository extends JpaRepository<Word, Long> {
 
     @Query(value = "select wd.id, wd.word from word wd where wd.id = :id", nativeQuery = true)
     Word findByID(@Param("id") int id);
-
 }
