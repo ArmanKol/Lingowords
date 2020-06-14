@@ -83,9 +83,9 @@ public class WordController {
         ResponseEntity<String> response;
         JsonObject body = new JsonObject();
 
-        if(search(word).getId() == -1){
+        if(search(word).getId() == -1 && readerMain.getWordChecker().checkSingleWord(word)){
             body.addProperty("message", "Word has been saved");
-            //wordRepository.save(new Word(word));
+            wordRepository.save(new Word(word));
             response = new ResponseEntity<>(body.toString(), HttpStatus.OK);
         }else{
             body.addProperty("message", "Word already exists in database");

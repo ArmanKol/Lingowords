@@ -23,6 +23,16 @@ class WordControllerTest {
     WordController controller;
 
     @Test
+    @DisplayName("getWords returns lijst met woorden")
+    void getWords_withWords_ListWordsObjects(){
+        int size = controller.getWords().size();
+
+        for(int i=0; i < size; i++){
+            assertTrue(controller.getWords().get(i) instanceof Word);
+        }
+    }
+
+    @Test
     @DisplayName("Niet bestaand woord in database return -1")
     void searchWord_DoesntExist_IdMinusOne(){
         Word woord = controller.search("niet bestaand woord");

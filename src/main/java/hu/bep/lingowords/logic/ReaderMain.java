@@ -114,4 +114,8 @@ public class ReaderMain {
             return new ReaderMain(this);
         }
     }
+
+    public WordChecker getWordChecker(){
+        return wordChecker;
+    }
 }

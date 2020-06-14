@@ -27,6 +27,22 @@ public class WordChecker {
         return correctWords;
     }
 
+    public boolean checkSingleWord(String word){
+        boolean wordCorrect = false;
+
+        if(wordLenghts.contains(word.length())){
+            if(word.matches("(\\b[a-z]\\w+)")){
+                wordCorrect = true;
+            }
+
+            if(word.matches("([\\w]+['.-][\\w]+)|('\\w[A-Z-a-z]+)|(\\w[0-9]\\w[a-z])|(\\w+[éëäáíïúüöó]\\w+)")){
+                wordCorrect = false;
+            }
+        }
+
+        return wordCorrect;
+    }
+
     public static class WordCheckerBuilder{
         private final Set<Integer> wordLenghts = new HashSet<>();
 

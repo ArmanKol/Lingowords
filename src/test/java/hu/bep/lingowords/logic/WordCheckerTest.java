@@ -59,4 +59,14 @@ class WordCheckerTest {
         assertSame(2, wordChecker.checkWords(input).size());
     }
 
+    @Test
+    @DisplayName("Een invalid woord returned false")
+    void checkSingleWord_InvalidWord_ReturnFalse(){
+        WordChecker wordChecker = new WordChecker.WordCheckerBuilder().addLength(5).addLength(6).addLength(7).build();
+
+        String invalidWord = "wadiwaop&'ë  eoapwdop";
+
+        assertFalse(wordChecker.checkSingleWord(invalidWord));
+    }
+
 }
